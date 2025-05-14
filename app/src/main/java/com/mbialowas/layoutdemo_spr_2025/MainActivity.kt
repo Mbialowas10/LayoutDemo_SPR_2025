@@ -1,16 +1,24 @@
 package com.mbialowas.layoutdemo_spr_2025
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.Manifest
 
 class MainActivity : AppCompatActivity() {
+
+    // constants
+    val CALL_REQUEST_CODE = 1
+    private val calledNumbers = mutableListOf<String>() // list is used to track phone numbers
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,17 +31,24 @@ class MainActivity : AppCompatActivity() {
         } // end of the callback
 
         // register our controls
-        val btnLinear:Button = findViewById<Button>(R.id.btn_linear)
-        val btnVertical:Button = findViewById<Button>(R.id.btn_vertical)
-        val btnRelative:Button = findViewById<Button>(R.id.btn_relative)
-        val btnConstraint:Button = findViewById<Button>(R.id.btn_constraint)
+        val btnLinear: Button = findViewById<Button>(R.id.btn_linear)
+        val btnVertical: Button = findViewById<Button>(R.id.btn_vertical)
+        val btnRelative: Button = findViewById<Button>(R.id.btn_relative)
+        val btnConstraint: Button = findViewById<Button>(R.id.btn_constraint)
+
+        // passing control to different apps
+        val btnApp: Button = findViewById<Button>(R.id.btn_app)
 
         btnLinear.setOnClickListener {
             val intent = Intent(this, LinearActivity::class.java)
             startActivity(intent)
         }
         btnVertical.setOnClickListener {
-            Toast.makeText(this,"Main Activity is already usingthe Vertical Layout", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Main Activity is already usingthe Vertical Layout",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         btnRelative.setOnClickListener {
@@ -45,7 +60,54 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        btnApp.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("https://cnn.com")
+            }
+            startActivity(intent)
+        }
+        initialize()
+    }
+    private fun initialize(){
 
+        val callButton = findViewById<Button>(R.id.btn_phone)//
+        val callLogButton = findViewById<Button>(R.id.btn_call_log)
+        //val contactsButton = findViewById<Button>(R.id.)
+        val galleryButton = findViewById<Button>(R.id.btn_photo)
+        val cameraButton = findViewById<Button>(R.id.btn_camera)
+        val alarmButton = findViewById<Button>(R.id.btn_alarm)
+
+        callButton.setOnClickListener { callButton() }
+
+    }
+    private fun callButton(){
+        calledNumbers.add("+14311234567")
+        calledNumbers.add("+14312222222")
+        calledNumbers.add("+14313333333")
+        calledNumbers.add("+14314444444")
+        calledNumbers.add("+14315555555")
+
+        val phoneNumber:String = "+12041234567"
+        makePhoneCall(phoneNumber)
+    }
+    private fun makePhoneCall(phoneNumber: String) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CALL_PHONE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission is granted, proceed with the phone call
+            val callIntent = Intent(Intent.ACTION_CALL)
+            callIntent.data = Uri.parse("tel:$phoneNumber")
+            startActivity(callIntent)
+        } else {
+            // Request the CALL_PHONE permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CALL_PHONE),
+                CALL_REQUEST_CODE
+            )
+        }
     }
 
 }
