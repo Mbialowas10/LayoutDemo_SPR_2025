@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.Manifest
+import android.provider.MediaStore
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,7 +79,13 @@ class MainActivity : AppCompatActivity() {
         val alarmButton = findViewById<Button>(R.id.btn_alarm)
 
         callButton.setOnClickListener { callButton() }
+        galleryButton.setOnClickListener { galleryButton() }
 
+    }
+    private fun galleryButton(){
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("content://media/external/images/media/")
+        startActivity(intent)
     }
     private fun callButton(){
         calledNumbers.add("+14311234567")
