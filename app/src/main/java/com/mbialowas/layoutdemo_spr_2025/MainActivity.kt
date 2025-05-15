@@ -13,13 +13,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.Manifest
+import android.provider.AlarmClock
+import android.provider.ContactsContract
 import android.provider.MediaStore
+import androidx.core.os.registerForAllProfilingResults
 
 class MainActivity : AppCompatActivity() {
 
     // constants
     val CALL_REQUEST_CODE = 1
-    private val calledNumbers = mutableListOf<String>() // list is used to track phone numbers
+    private val calledNumbers = arrayListOf<String>() // list is used to track phone numbers
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         val btnVertical: Button = findViewById<Button>(R.id.btn_vertical)
         val btnRelative: Button = findViewById<Button>(R.id.btn_relative)
         val btnConstraint: Button = findViewById<Button>(R.id.btn_constraint)
+
 
         // passing control to different apps
         val btnApp: Button = findViewById<Button>(R.id.btn_app)
@@ -73,15 +77,35 @@ class MainActivity : AppCompatActivity() {
 
         val callButton = findViewById<Button>(R.id.btn_phone)//
         val callLogButton = findViewById<Button>(R.id.btn_call_log)
-        //val contactsButton = findViewById<Button>(R.id.)
+        val contactsButton = findViewById<Button>(R.id.btn_contacts)
         val galleryButton = findViewById<Button>(R.id.btn_photo)
         val cameraButton = findViewById<Button>(R.id.btn_camera)
         val alarmButton = findViewById<Button>(R.id.btn_alarm)
 
+
         callButton.setOnClickListener { callButton() }
         galleryButton.setOnClickListener { galleryButton() }
+        callLogButton.setOnClickListener { callLogButton() }
+        cameraButton.setOnClickListener { cameraButton() }
+        alarmButton.setOnClickListener { alarmButton() }
+        contactsButton.setOnClickListener { contactsButton() }
 
     }
+    private fun contactsButton(){
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = ContactsContract.Contacts.CONTENT_TYPE
+        startActivity(intent)
+
+    }
+    private fun cameraButton(){
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivity(intent)
+    }
+    private fun alarmButton(){
+        val intent = Intent(AlarmClock.ACTION_SHOW_ALARMS)
+        startActivity(intent)
+    }
+
     private fun galleryButton(){
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse("content://media/external/images/media/")
@@ -94,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         calledNumbers.add("+14314444444")
         calledNumbers.add("+14315555555")
 
-        val phoneNumber:String = "+12041234567"
+        val phoneNumber:String = "+36363563454"
         makePhoneCall(phoneNumber)
     }
     private fun makePhoneCall(phoneNumber: String) {
@@ -115,6 +139,13 @@ class MainActivity : AppCompatActivity() {
                 CALL_REQUEST_CODE
             )
         }
+    }
+
+    // open call log
+    private fun callLogButton(){
+        val intent = Intent(this, CallLogActivity::class.java)
+        intent.putStringArrayListExtra("phoneNumbers", calledNumbers)
+        startActivity(intent)
     }
 
 }
